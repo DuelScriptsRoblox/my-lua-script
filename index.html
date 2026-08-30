@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CYBER LAB</title>
-
-<style>
+<title>CYBER LAB</title><style>
 *{
   box-sizing:border-box;
   margin:0;
@@ -179,188 +176,387 @@ input{
   font-size:12px;
   margin-bottom:12px;
 }
-</style>
-</head>
 
-<body>
-
-<div class="container">
-
-  <header class="header">
-    <div class="logo">CYBER LAB</div>
-    <div class="subtitle">Interactive Digital Terminal</div>
-  </header>
-
-  <div class="grid">
-
-    <section class="card">
-      <span class="badge">SYSTEM</span>
-      <h2>🖥 Terminal</h2>
-
-      <div class="terminal" id="terminal">
-        > Initializing system...<br>
-        > Waiting for command...
-      </div>
-
-      <button onclick="scan()">RUN SYSTEM SCAN</button>
-      <button onclick="clearTerminal()">CLEAR TERMINAL</button>
-    </section>
-
-    <section class="card">
-      <span class="badge">PLAYER</span>
-      <h2>🏆 Your Progress</h2>
-
-      <div class="stat">
-        <span>Level</span>
-        <b id="level">1</b>
-      </div>
-
-      <div class="stat">
-        <span>XP</span>
-        <b id="xp">0</b>
-      </div>
-
-      <div class="progress">
-        <div class="bar" id="bar"></div>
-      </div>
-
-      <button onclick="addXP(10)">+10 XP</button>
-      <button onclick="addXP(25)">+25 XP</button>
-    </section>
-
-    <section class="card">
-      <span class="badge">SECRET</span>
-      <h2>🔐 Hidden Access</h2>
-
-      <p style="opacity:.65">
-        Find the secret code.
-      </p>
-
-      <input id="code" placeholder="Enter code...">
-      <button onclick="checkCode()">UNLOCK</button>
-
-      <div class="secret" id="secret">
-        🎉 SECRET AREA UNLOCKED!
-        <br><br>
-        You found the hidden section.
-      </div>
-    </section>
-
-    <section class="card" id="game">
-      <span class="badge">MINI GAME</span>
-      <h2>🎯 Reaction Test</h2>
-
-      <p id="gameText" style="opacity:.65">
-        Press START and click the target.
-      </p>
-
-      <button onclick="startGame()">START</button>
-
-      <div class="target" id="target" onclick="hitTarget()"></div>
-
-      <b id="score">Score: 0</b>
-    </section>
-
-  </div>
-
-  <div class="footer">
-    CYBER LAB • GitHub Pages Project
-  </div>
-
-</div>
-
-<script>
-let xp = Number(localStorage.getItem("xp") || 0);
-let level = Number(localStorage.getItem("level") || 1);
-
-function updateXP(){
-  document.getElementById("xp").textContent = xp;
-  document.getElementById("level").textContent = level;
-
-  let needed = level * 100;
-  let percent = Math.min((xp / needed) * 100,100);
-
-  document.getElementById("bar").style.width = percent + "%";
-
-  localStorage.setItem("xp",xp);
-  localStorage.setItem("level",level);
+/* WIN AREA */
+#winArea{
+  display:none;
+  text-align:center;
+  grid-column:1 / -1;
+  animation:winAppear .8s ease;
 }
 
+.winImage{
+  width:100%;
+  max-width:400px;
+  max-height:450px;
+  object-fit:contain;
+  border-radius:18px;
+  display:block;
+  margin:10px auto 20px;
+  border:1px solid #444;
+}
+
+.winTitle{
+  font-size:32px;
+  font-weight:900;
+  letter-spacing:2px;
+}
+
+.winUser{
+  margin-top:10px;
+  font-size:18px;
+  opacity:.7;
+  font-weight:bold;
+}
+
+@keyframes winAppear{
+  from{
+    opacity:0;
+    transform:scale(.85);
+  }
+  to{
+    opacity:1;
+    transform:scale(1);
+  }
+}
+</style></head><body><div class="container"><header class="header">
+  <div class="logo">CYBER LAB</div>
+  <div class="subtitle">Interactive Digital Terminal</div>
+</header><div class="grid"><!-- TERMINAL --><section class="card">
+  <span class="badge">SYSTEM</span>
+  <h2>🖥 Terminal</h2>  <div class="terminal" id="terminal">
+    > Initializing system...<br>
+    > Waiting for command...
+  </div><button onclick="scan()">RUN SYSTEM SCAN</button>
+<button onclick="clearTerminal()">CLEAR TERMINAL</button>
+<button id="oneTimeBtn" onclick="useOneTimeLink()">
+USE ONE-TIME LINK
+</button>
+
+</section><!-- PLAYER --><section class="card">
+  <span class="badge">PLAYER</span>
+  <h2>🏆 Your Progress</h2>  <div class="stat">
+    <span>Level</span>
+    <b id="level">1</b>
+  </div>  <div class="stat">
+    <span>XP</span>
+    <b><span id="xp">0</span> / 10000</b>
+  </div>  <div class="progress">
+    <div class="bar" id="bar"></div>
+  </div><button onclick="addXP(10)">+10 XP</button>
+<button onclick="addXP(25)">+25 XP</button>
+
+</section><!-- SECRET --><section class="card">
+  <span class="badge">SECRET</span>
+  <h2>🔐 Hidden Access</h2>  <p style="opacity:.65">
+    Find the secret code.
+  </p><input
+id="code"
+placeholder="Enter code..."
+maxlength="20"
+
+«»
+
+<button onclick="checkCode()">UNLOCK</button>
+
+  <div class="secret" id="secret">
+    🎉 SECRET AREA UNLOCKED!
+    <br><br>
+    You found the hidden section.
+    <br><br>
+    <b>+5000 XP</b>
+  </div>
+</section><!-- MINI GAME --><section class="card" id="game">
+  <span class="badge">MINI GAME</span>
+  <h2>🎯 Reaction Test</h2>  <p id="gameText" style="opacity:.65">
+    Press START and click the target.
+  </p><button onclick="startGame()">START</button>
+
+  <div
+    class="target"
+    id="target"
+    onclick="hitTarget()">
+  </div><b id="score">Score: 0</b>
+
+</section><!-- WIN AREA --><section class="card" id="winArea"><span class="badge">10,000 XP COMPLETE</span>
+
+<img
+class="winImage"
+src="https://fastblox.gg/products/spaghetti-tualetti-1"
+alt="Spaghetti Tualetti"
+
+«»
+
+  <div class="winTitle">
+    YOU WINN 🏆
+  </div>  <div class="winUser">
+    Onyx_123445
+  </div></section></div><div class="footer">
+  CYBER LAB • GitHub Pages Project
+</div></div><script>
+
+/* =========================
+   ONE-TIME ACCESS
+========================= */
+
+const oneTimeUsed = localStorage.getItem("cyberLabOneTimeUsed") === "1";
+
+function useOneTimeLink(){
+  if(localStorage.getItem("cyberLabOneTimeUsed") === "1"){
+    terminal("> ACCESS LINK ALREADY USED");
+    return;
+  }
+
+  localStorage.setItem("cyberLabOneTimeUsed", "1");
+  terminal("> ONE-TIME ACCESS USED ✓");
+  terminal("> ACCESS CLOSED");
+
+  const btn = document.getElementById("oneTimeBtn");
+  if(btn){
+    btn.disabled = true;
+    btn.textContent = "LINK CLOSED";
+  }
+}
+
+/* =========================
+   XP SYSTEM
+========================= */
+
+let xp = Number(localStorage.getItem("xp") || 0);
+
+let level = Number(
+  localStorage.getItem("level") || 1
+);
+
+
+/* XP UPDATE */
+
+function updateXP(){
+
+  /* Maximum XP = 10,000 */
+
+  if(xp > 10000){
+    xp = 10000;
+  }
+
+  /* Level 1-10 */
+
+  level = Math.min(
+    Math.floor(xp / 1000) + 1,
+    10
+  );
+
+  document.getElementById("xp").textContent = xp;
+
+  document.getElementById("level").textContent = level;
+
+  let percent = (xp / 10000) * 100;
+
+  document.getElementById("bar").style.width =
+    percent + "%";
+
+
+  localStorage.setItem("xp",xp);
+
+  localStorage.setItem("level",level);
+
+
+  /* WIN */
+
+  if(xp >= 10000){
+
+    document.getElementById("winArea").style.display =
+      "block";
+
+    terminal("> 10,000 XP REACHED ✓");
+
+    terminal("> YOU WINN 🏆");
+
+  }else{
+
+    document.getElementById("winArea").style.display =
+      "none";
+  }
+}
+
+
+/* ADD XP */
+
 function addXP(amount){
+
+  if(xp >= 10000){
+
+    xp = 10000;
+
+    updateXP();
+
+    return;
+  }
+
+
   xp += amount;
 
-  while(xp >= level * 100){
-    xp -= level * 100;
-    level++;
-    terminal("> LEVEL UP! You reached level " + level);
+
+  if(xp > 10000){
+    xp = 10000;
   }
+
+
+  terminal("> +" + amount + " XP");
+
 
   updateXP();
 }
 
+
+/* =========================
+   TERMINAL
+========================= */
+
 function terminal(text){
-  const t = document.getElementById("terminal");
-  t.innerHTML += "<br>" + text;
-  t.scrollTop = t.scrollHeight;
+
+  const t =
+    document.getElementById("terminal");
+
+  t.innerHTML +=
+    "<br>" + text;
+
+  t.scrollTop =
+    t.scrollHeight;
 }
 
+
+/* =========================
+   SYSTEM SCAN
+========================= */
+
 function scan(){
+
   terminal("> Starting scan...");
-  
+
+
   setTimeout(()=>{
     terminal("> Checking modules...");
   },500);
+
 
   setTimeout(()=>{
     terminal("> Checking interface...");
   },1000);
 
+
   setTimeout(()=>{
     terminal("> Checking local storage...");
   },1500);
 
+
   setTimeout(()=>{
     terminal("> SYSTEM READY ✓");
+
     addXP(15);
+
   },2200);
 }
 
+
+/* CLEAR TERMINAL */
+
 function clearTerminal(){
+
   document.getElementById("terminal").innerHTML =
-    "> Terminal cleared...<br>> Waiting for command...";
+    "> Terminal cleared...<br>" +
+    "> Waiting for command...";
 }
 
+
+/* =========================
+   SECRET CODE
+========================= */
+
 function checkCode(){
-  const code = document.getElementById("code").value.trim();
+
+  const code =
+    document.getElementById("code")
+    .value
+    .trim();
+
 
   if(code === "777"){
-    document.getElementById("secret").style.display = "block";
+
+    /* 777 can only be used once */
+    if(localStorage.getItem("cyberLab777Used") === "1"){
+      terminal("> 777 CODE ALREADY USED");
+      return;
+    }
+
+    localStorage.setItem("cyberLab777Used", "1");
+
+    document.getElementById("secret")
+      .style.display = "block";
+
+
     terminal("> SECRET ACCESS GRANTED ✓");
-    addXP(50);
+
+
+    /* 777 = +5000 XP */
+
+    addXP(5000);
+
+    document.getElementById("code").disabled = true;
+    document.querySelector('button[onclick="checkCode()"]').disabled = true;
+    document.querySelector('button[onclick="checkCode()"]').textContent = "CODE USED";
+
+
   }else{
+
     terminal("> ACCESS DENIED");
+
   }
 }
 
+
+/* =========================
+   REACTION GAME
+========================= */
+
 let score = 0;
+
 let gameRunning = false;
 
+
 function startGame(){
+
   score = 0;
+
   gameRunning = true;
 
-  document.getElementById("score").textContent = "Score: 0";
-  document.getElementById("gameText").textContent =
+
+  document.getElementById("score")
+    .textContent =
+    "Score: 0";
+
+
+  document.getElementById("gameText")
+    .textContent =
     "CLICK THE TARGET!";
+
 
   moveTarget();
 }
 
+
 function moveTarget(){
+
   if(!gameRunning) return;
 
-  const target = document.getElementById("target");
-  target.style.display = "block";
+
+  const target =
+    document.getElementById("target");
+
+
+  target.style.display =
+    "block";
+
 
   target.style.transform =
     "translate(" +
@@ -370,30 +566,70 @@ function moveTarget(){
     "px)";
 }
 
+
 function hitTarget(){
+
   if(!gameRunning) return;
+
 
   score++;
 
-  document.getElementById("score").textContent =
+
+  document.getElementById("score")
+    .textContent =
     "Score: " + score;
+
 
   addXP(5);
 
+
   if(score >= 10){
+
     gameRunning = false;
-    document.getElementById("target").style.display = "none";
-    document.getElementById("gameText").textContent =
+
+
+    document.getElementById("target")
+      .style.display =
+      "none";
+
+
+    document.getElementById("gameText")
+      .textContent =
       "🏆 YOU WIN!";
+
+
     addXP(25);
+
     return;
   }
+
 
   moveTarget();
 }
 
-updateXP();
-</script>
 
-</body>
-    </html>
+/* =========================
+   START
+========================= */
+
+updateXP();
+
+if(localStorage.getItem("cyberLab777Used") === "1"){
+  document.getElementById("code").disabled = true;
+  const codeButton = document.querySelector('button[onclick="checkCode()"]');
+  if(codeButton){
+    codeButton.disabled = true;
+    codeButton.textContent = "CODE USED";
+  }
+}
+
+if(oneTimeUsed){
+  const btn = document.getElementById("oneTimeBtn");
+  if(btn){
+    btn.disabled = true;
+    btn.textContent = "LINK CLOSED";
+  }
+}
+
+</script></body>
+</html>
