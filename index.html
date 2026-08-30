@@ -187,8 +187,8 @@ input{
 
 .winImage{
   width:100%;
-  max-width:400px;
-  max-height:450px;
+  max-width:700px;
+  max-height:650px;
   object-fit:contain;
   border-radius:18px;
   display:block;
@@ -207,6 +207,14 @@ input{
   font-size:18px;
   opacity:.7;
   font-weight:bold;
+}
+
+.xpGameCard{
+  text-align:center;
+}
+
+.xpGameButton{
+  font-weight:800;
 }
 
 @keyframes winAppear{
@@ -278,6 +286,14 @@ maxlength="20"
     onclick="hitTarget()">
   </div><b id="score">Score: 0</b>
 
+</section><!-- XP GAMES --><section class="card xpGameCard">
+  <span class="badge">XP GAMES</span>
+  <h2>⚡ XP Challenge</h2>
+  <p id="xpGameText" style="opacity:.65">
+    Click the button to earn XP.
+  </p>
+  <button class="xpGameButton" onclick="xpTapGame()">⚡ TAP FOR +10 XP</button>
+  <button class="xpGameButton" onclick="xpBonusGame()">🎁 BONUS +50 XP</button>
 </section><!-- WIN AREA --><section class="card" id="winArea"><span class="badge">10,000 XP COMPLETE</span>
 
 <img
@@ -512,6 +528,22 @@ function checkCode(){
     terminal("> ACCESS DENIED");
 
   }
+}
+
+/* =========================
+   EXTRA XP GAMES
+========================= */
+
+function xpTapGame(){
+  addXP(10);
+  document.getElementById("xpGameText").textContent =
+    "⚡ +10 XP! Keep going!";
+}
+
+function xpBonusGame(){
+  addXP(50);
+  document.getElementById("xpGameText").textContent =
+    "🎁 +50 XP BONUS!";
 }
 
 
