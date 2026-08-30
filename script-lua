@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CYBER LAB</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  min-height:100vh;
+  background:#050505;
+  color:#fff;
+  font-family:Arial,sans-serif;
+  overflow-x:hidden;
+}
+
+body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:
+    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:35px 35px;
+  pointer-events:none;
+}
+
+.container{
+  width:min(1000px,92%);
+  margin:auto;
+  padding:30px 0 60px;
+}
+
+.header{
+  text-align:center;
+  padding:35px 15px;
+}
+
+.logo{
+  font-size:42px;
+  font-weight:900;
+  letter-spacing:5px;
+  animation:glitch 2s infinite;
+}
+
+.subtitle{
+  margin-top:10px;
+  opacity:.6;
+}
+
+@keyframes glitch{
+  0%,90%,100%{transform:none}
+  92%{transform:translateX(3px)}
+  94%{transform:translateX(-3px)}
+  96%{transform:translateX(2px)}
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:18px;
+}
+
+.card{
+  background:rgba(20,20,20,.85);
+  border:1px solid #333;
+  border-radius:16px;
+  padding:20px;
+  box-shadow:0 0 30px rgba(255,255,255,.03);
+}
+
+.card h2{
+  margin-bottom:15px;
+  font-size:20px;
+}
+
+button{
+  width:100%;
+  padding:13px;
+  margin-top:9px;
+  border:1px solid #444;
+  border-radius:10px;
+  background:#111;
+  color:white;
+  cursor:pointer;
+  transition:.2s;
+}
+
+button:hover{
+  transform:translateY(-2px);
+  background:#1d1d1d;
+}
+
+.terminal{
+  height:190px;
+  overflow:auto;
+  background:#000;
+  border-radius:10px;
+  padding:14px;
+  font-family:monospace;
+  font-size:13px;
+  color:#ddd;
+}
+
+.progress{
+  width:100%;
+  height:12px;
+  background:#222;
+  border-radius:20px;
+  overflow:hidden;
+  margin:12px 0;
+}
+
+.bar{
+  width:0%;
+  height:100%;
+  background:#fff;
+  transition:.4s;
+}
+
+.stat{
+  display:flex;
+  justify-content:space-between;
+  margin:8px 0;
+  opacity:.8;
+}
+
+.secret{
+  display:none;
+  margin-top:15px;
+  padding:15px;
+  border:1px dashed #555;
+  border-radius:10px;
+}
+
+input{
+  width:100%;
+  padding:12px;
+  margin-top:8px;
+  background:#080808;
+  color:#fff;
+  border:1px solid #444;
+  border-radius:9px;
+  outline:none;
+}
+
+#game{
+  text-align:center;
+}
+
+.target{
+  width:55px;
+  height:55px;
+  border-radius:50%;
+  background:#fff;
+  margin:25px auto;
+  cursor:pointer;
+  display:none;
+}
+
+.footer{
+  text-align:center;
+  margin-top:35px;
+  opacity:.45;
+  font-size:13px;
+}
+
+.badge{
+  display:inline-block;
+  padding:6px 10px;
+  border:1px solid #444;
+  border-radius:20px;
+  font-size:12px;
+  margin-bottom:12px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <header class="header">
+    <div class="logo">CYBER LAB</div>
+    <div class="subtitle">Interactive Digital Terminal</div>
+  </header>
+
+  <div class="grid">
+
+    <section class="card">
+      <span class="badge">SYSTEM</span>
+      <h2>🖥 Terminal</h2>
+
+      <div class="terminal" id="terminal">
+        > Initializing system...<br>
+        > Waiting for command...
+      </div>
+
+      <button onclick="scan()">RUN SYSTEM SCAN</button>
+      <button onclick="clearTerminal()">CLEAR TERMINAL</button>
+    </section>
+
+    <section class="card">
+      <span class="badge">PLAYER</span>
+      <h2>🏆 Your Progress</h2>
+
+      <div class="stat">
+        <span>Level</span>
+        <b id="level">1</b>
+      </div>
+
+      <div class="stat">
+        <span>XP</span>
+        <b id="xp">0</b>
+      </div>
+
+      <div class="progress">
+        <div class="bar" id="bar"></div>
+      </div>
+
+      <button onclick="addXP(10)">+10 XP</button>
+      <button onclick="addXP(25)">+25 XP</button>
+    </section>
+
+    <section class="card">
+      <span class="badge">SECRET</span>
+      <h2>🔐 Hidden Access</h2>
+
+      <p style="opacity:.65">
+        Find the secret code.
+      </p>
+
+      <input id="code" placeholder="Enter code...">
+      <button onclick="checkCode()">UNLOCK</button>
+
+      <div class="secret" id="secret">
+        🎉 SECRET AREA UNLOCKED!
+        <br><br>
+        You found the hidden section.
+      </div>
+    </section>
+
+    <section class="card" id="game">
+      <span class="badge">MINI GAME</span>
+      <h2>🎯 Reaction Test</h2>
+
+      <p id="gameText" style="opacity:.65">
+        Press START and click the target.
+      </p>
+
+      <button onclick="startGame()">START</button>
+
+      <div class="target" id="target" onclick="hitTarget()"></div>
+
+      <b id="score">Score: 0</b>
+    </section>
+
+  </div>
+
+  <div class="footer">
+    CYBER LAB • GitHub Pages Project
+  </div>
+
+</div>
+
+<script>
+let xp = Number(localStorage.getItem("xp") || 0);
+let level = Number(localStorage.getItem("level") || 1);
+
+function updateXP(){
+  document.getElementById("xp").textContent = xp;
+  document.getElementById("level").textContent = level;
+
+  let needed = level * 100;
+  let percent = Math.min((xp / needed) * 100,100);
+
+  document.getElementById("bar").style.width = percent + "%";
+
+  localStorage.setItem("xp",xp);
+  localStorage.setItem("level",level);
+}
+
+function addXP(amount){
+  xp += amount;
+
+  while(xp >= level * 100){
+    xp -= level * 100;
+    level++;
+    terminal("> LEVEL UP! You reached level " + level);
+  }
+
+  updateXP();
+}
+
+function terminal(text){
+  const t = document.getElementById("terminal");
+  t.innerHTML += "<br>" + text;
+  t.scrollTop = t.scrollHeight;
+}
+
+function scan(){
+  terminal("> Starting scan...");
+  
+  setTimeout(()=>{
+    terminal("> Checking modules...");
+  },500);
+
+  setTimeout(()=>{
+    terminal("> Checking interface...");
+  },1000);
+
+  setTimeout(()=>{
+    terminal("> Checking local storage...");
+  },1500);
+
+  setTimeout(()=>{
+    terminal("> SYSTEM READY ✓");
+    addXP(15);
+  },2200);
+}
+
+function clearTerminal(){
+  document.getElementById("terminal").innerHTML =
+    "> Terminal cleared...<br>> Waiting for command...";
+}
+
+function checkCode(){
+  const code = document.getElementById("code").value.trim();
+
+  if(code === "777"){
+    document.getElementById("secret").style.display = "block";
+    terminal("> SECRET ACCESS GRANTED ✓");
+    addXP(50);
+  }else{
+    terminal("> ACCESS DENIED");
+  }
+}
+
+let score = 0;
+let gameRunning = false;
+
+function startGame(){
+  score = 0;
+  gameRunning = true;
+
+  document.getElementById("score").textContent = "Score: 0";
+  document.getElementById("gameText").textContent =
+    "CLICK THE TARGET!";
+
+  moveTarget();
+}
+
+function moveTarget(){
+  if(!gameRunning) return;
+
+  const target = document.getElementById("target");
+  target.style.display = "block";
+
+  target.style.transform =
+    "translate(" +
+    (Math.random()*140-70) +
+    "px," +
+    (Math.random()*80-40) +
+    "px)";
+}
+
+function hitTarget(){
+  if(!gameRunning) return;
+
+  score++;
+
+  document.getElementById("score").textContent =
+    "Score: " + score;
+
+  addXP(5);
+
+  if(score >= 10){
+    gameRunning = false;
+    document.getElementById("target").style.display = "none";
+    document.getElementById("gameText").textContent =
+      "🏆 YOU WIN!";
+    addXP(25);
+    return;
+  }
+
+  moveTarget();
+}
+
+updateXP();
+</script>
+
+</body>
+</html>
