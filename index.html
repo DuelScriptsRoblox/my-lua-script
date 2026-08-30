@@ -181,6 +181,10 @@ input{
 
 .linkAnimation.active{display:flex}
 
+.linkAnimation.active .animStage{
+  animation:stageIn .45s ease-out;
+}
+
 .animStage{
   position:relative;
   width:min(92vw,520px);
@@ -206,6 +210,16 @@ input{
   opacity:0;
 }
 
+.animDoor.open::after{
+  content:"";
+  position:absolute;
+  width:120%;
+  height:120%;
+  border-radius:50%;
+  background:radial-gradient(circle,#fff 0%,rgba(255,255,255,.15) 18%,transparent 55%);
+  animation:flash .7s ease-out;
+}
+
 .animPerson{
   position:absolute;
   left:-100px;
@@ -224,6 +238,88 @@ input{
   font-size:clamp(22px,6vw,38px);
   font-weight:900;
   letter-spacing:2px;
+}
+
+.loadingScreen{
+  position:absolute;
+  inset:0;
+  z-index:5;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  background:#050505;
+  transition:opacity .8s ease;
+}
+
+.loadingScreen.hide{opacity:0;pointer-events:none}
+
+.loadingPercent{
+  font-size:56px;
+  font-weight:900;
+}
+
+.loadingBar{
+  width:75%;
+  height:10px;
+  margin-top:18px;
+  background:#222;
+  border-radius:20px;
+  overflow:hidden;
+}
+
+.loadingFill{
+  width:0%;
+  height:100%;
+  background:#fff;
+  transition:width .08s linear;
+}
+
+.loveScreen{
+  position:absolute;
+  inset:0;
+  z-index:4;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#b00000;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .6s ease;
+}
+
+.loveScreen.show{opacity:1}
+
+.loveText{
+  font-size:clamp(50px,15vw,100px);
+  font-weight:900;
+}
+
+.redFlash{
+  position:absolute;
+  inset:0;
+  z-index:6;
+  background:rgba(180,0,0,.75);
+  opacity:0;
+  pointer-events:none;
+}
+
+.redFlash.flash{animation:redPulse .45s ease-out}
+
+@keyframes redPulse{
+  0%{opacity:0}
+  35%{opacity:1}
+  100%{opacity:0}
+}
+
+@keyframes stageIn{
+  from{opacity:0;transform:scale(.92)}
+  to{opacity:1;transform:scale(1)}
+}
+
+@keyframes flash{
+  from{transform:scale(.2);opacity:1}
+  to{transform:scale(1.5);opacity:0}
 }
 
 .badge{
@@ -315,7 +411,7 @@ input{
   </div><button onclick="scan()">RUN SYSTEM SCAN</button>
 <button onclick="clearTerminal()">CLEAR TERMINAL</button>
 <button id="oneTimeBtn" onclick="useOneTimeLink()">
-USE ONE-TIME LINK
+🚪 ENTER CYBER LAB
 </button>
 
 </section><!-- PLAYER --><section class="card">
@@ -396,9 +492,17 @@ alt="Spaghetti Tualetti"
     Onyx_123445
   </div></section></div><!-- LINK ENTRY ANIMATION --><div class="linkAnimation" id="linkAnimation" onclick="closeLinkAnimation()">
   <div class="animStage">
+    <div class="loadingScreen" id="loadingScreen">
+      <div class="loadingPercent" id="loadingPercent">0%</div>
+      <div class="loadingBar"><div class="loadingFill" id="loadingFill"></div></div>
+    </div>
+    <div class="loveScreen" id="loveScreen">
+      <div class="loveText">LOVE 100% ❤️</div>
+    </div>
+    <div class="redFlash" id="redFlash"></div>
     <div class="animText" id="animText">ACCESSING CYBER LAB...</div>
     <div class="animDoor" id="animDoor">🚪</div>
-    <div class="animPerson" id="animPerson">🧍</div>
+    <div class="animPerson" id="animPerson">🏃</div>
   </div>
 </div><div class="footer">
   CYBER LAB • GitHub Pages Project
@@ -424,26 +528,60 @@ function useOneTimeLink(){
   const door = document.getElementById("animDoor");
   const person = document.getElementById("animPerson");
   const text = document.getElementById("animText");
+  const loading = document.getElementById("loadingScreen");
+  const loadingPercent = document.getElementById("loadingPercent");
+  const loadingFill = document.getElementById("loadingFill");
+  const love = document.getElementById("loveScreen");
+  const redFlash = document.getElementById("redFlash");
 
   overlay.classList.add("active");
 
+  loading.classList.remove("hide");
+  love.classList.remove("show");
+  door.classList.remove("open");
+  person.classList.remove("walk");
+
+  let progress = 0;
+  const loader = setInterval(()=>{
+    progress++;
+    loadingPercent.textContent = progress + "%";
+    loadingFill.style.width = progress + "%";
+    if(progress >= 100){
+      clearInterval(loader);
+      loading.classList.add("hide");
+      love.classList.add("show");
+      text.textContent = "LOVE 100% ❤️";
+    }
+  },30);
+
   setTimeout(()=>{
+    love.classList.remove("show");
     door.classList.add("open");
     text.textContent = "DOOR OPENING...";
-  },700);
+  },3800);
 
   setTimeout(()=>{
     person.classList.add("walk");
     text.textContent = "WELCOME TO CYBER LAB";
-  },1600);
+  },4600);
 
   setTimeout(()=>{
+    redFlash.classList.remove("flash");
+    void redFlash.offsetWidth;
+    redFlash.classList.add("flash");
     text.textContent = "ENTERING... ✨";
-  },3200);
+  },6200);
 
   setTimeout(()=>{
     overlay.classList.remove("active");
-  },4300);
+    loading.classList.remove("hide");
+    love.classList.remove("show");
+    loadingPercent.textContent = "0%";
+    loadingFill.style.width = "0%";
+    door.classList.remove("open");
+    person.classList.remove("walk");
+    text.textContent = "ACCESSING CYBER LAB...";
+  },7200);
 
   const btn = document.getElementById("oneTimeBtn");
   if(btn){
@@ -804,4 +942,4 @@ if(oneTimeUsed){
 }
 
 </script></body>
-        </html>
+</html>
