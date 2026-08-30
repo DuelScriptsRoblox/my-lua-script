@@ -168,6 +168,64 @@ input{
   font-size:13px;
 }
 
+.linkAnimation{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:#000;
+  cursor:pointer;
+}
+
+.linkAnimation.active{display:flex}
+
+.animStage{
+  position:relative;
+  width:min(92vw,520px);
+  height:min(82vh,620px);
+  overflow:hidden;
+  border:1px solid #333;
+  border-radius:22px;
+  background:radial-gradient(circle at center,#202020 0%,#050505 65%);
+}
+
+.animDoor{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:clamp(70px,22vw,150px);
+  transition:transform 1.2s ease,opacity 1.2s ease;
+}
+
+.animDoor.open{
+  transform:scale(1.8);
+  opacity:0;
+}
+
+.animPerson{
+  position:absolute;
+  left:-100px;
+  bottom:12%;
+  font-size:70px;
+  transition:left 1.8s cubic-bezier(.2,.8,.2,1),transform 1.8s ease;
+}
+
+.animPerson.walk{left:calc(50% - 35px)}
+
+.animText{
+  position:absolute;
+  top:12%;
+  width:100%;
+  text-align:center;
+  font-size:clamp(22px,6vw,38px);
+  font-weight:900;
+  letter-spacing:2px;
+}
+
 .badge{
   display:inline-block;
   padding:6px 10px;
@@ -187,13 +245,15 @@ input{
 
 .winImage{
   width:100%;
-  max-width:700px;
-  max-height:650px;
+  max-width:900px;
+  height:auto;
+  max-height:none;
   object-fit:contain;
   border-radius:18px;
   display:block;
   margin:10px auto 20px;
   border:1px solid #444;
+  image-rendering:auto;
 }
 
 .winTitle{
@@ -215,6 +275,23 @@ input{
 
 .xpGameButton{
   font-weight:800;
+}
+
+.funCard{
+  text-align:center;
+}
+
+.sticker{
+  font-size:64px;
+  display:inline-block;
+  margin:8px 0 14px;
+  animation:floatSticker 2s ease-in-out infinite;
+  filter:drop-shadow(0 0 14px rgba(255,255,255,.2));
+}
+
+@keyframes floatSticker{
+  0%,100%{transform:translateY(0) rotate(-3deg)}
+  50%{transform:translateY(-8px) rotate(3deg)}
 }
 
 @keyframes winAppear{
@@ -294,11 +371,21 @@ maxlength="20"
   </p>
   <button class="xpGameButton" onclick="xpTapGame()">⚡ TAP FOR +10 XP</button>
   <button class="xpGameButton" onclick="xpBonusGame()">🎁 BONUS +50 XP</button>
+</section><!-- FUN XP GAMES --><section class="card funCard">
+  <span class="badge">ARCADE</span>
+  <div class="sticker">🧠🍝🚽✨</div>
+  <h2>🎮 Cyber Arcade</h2>
+  <p id="arcadeText" style="opacity:.65">
+    Play quick challenges and collect XP!
+  </p>
+  <button onclick="luckyXP()">🎰 LUCKY XP +20</button>
+  <button onclick="brainrotXP()">🧠 BRAINROT BONUS +30</button>
+  <button onclick="stickerXP()">✨ STICKER POWER +15</button>
 </section><!-- WIN AREA --><section class="card" id="winArea"><span class="badge">10,000 XP COMPLETE</span>
 
 <img
 class="winImage"
-src="https://fastblox.gg/products/spaghetti-tualetti-1"
+src="https://fastblox.gg/cdn/shop/files/Spaghetti_Tualetti.png_1_700x700.png?v=1781420211"
 alt="Spaghetti Tualetti"
 
 «»
@@ -307,7 +394,13 @@ alt="Spaghetti Tualetti"
     YOU WINN 🏆
   </div>  <div class="winUser">
     Onyx_123445
-  </div></section></div><div class="footer">
+  </div></section></div><!-- LINK ENTRY ANIMATION --><div class="linkAnimation" id="linkAnimation" onclick="closeLinkAnimation()">
+  <div class="animStage">
+    <div class="animText" id="animText">ACCESSING CYBER LAB...</div>
+    <div class="animDoor" id="animDoor">🚪</div>
+    <div class="animPerson" id="animPerson">🧍</div>
+  </div>
+</div><div class="footer">
   CYBER LAB • GitHub Pages Project
 </div></div><script>
 
@@ -325,13 +418,42 @@ function useOneTimeLink(){
 
   localStorage.setItem("cyberLabOneTimeUsed", "1");
   terminal("> ONE-TIME ACCESS USED ✓");
-  terminal("> ACCESS CLOSED");
+  terminal("> STARTING ENTRY ANIMATION...");
+
+  const overlay = document.getElementById("linkAnimation");
+  const door = document.getElementById("animDoor");
+  const person = document.getElementById("animPerson");
+  const text = document.getElementById("animText");
+
+  overlay.classList.add("active");
+
+  setTimeout(()=>{
+    door.classList.add("open");
+    text.textContent = "DOOR OPENING...";
+  },700);
+
+  setTimeout(()=>{
+    person.classList.add("walk");
+    text.textContent = "WELCOME TO CYBER LAB";
+  },1600);
+
+  setTimeout(()=>{
+    text.textContent = "ENTERING... ✨";
+  },3200);
+
+  setTimeout(()=>{
+    overlay.classList.remove("active");
+  },4300);
 
   const btn = document.getElementById("oneTimeBtn");
   if(btn){
     btn.disabled = true;
     btn.textContent = "LINK CLOSED";
   }
+}
+
+function closeLinkAnimation(){
+  document.getElementById("linkAnimation").classList.remove("active");
 }
 
 /* =========================
@@ -546,6 +668,24 @@ function xpBonusGame(){
     "🎁 +50 XP BONUS!";
 }
 
+function luckyXP(){
+  addXP(20);
+  document.getElementById("arcadeText").textContent =
+    "🎰 Lucky hit! +20 XP";
+}
+
+function brainrotXP(){
+  addXP(30);
+  document.getElementById("arcadeText").textContent =
+    "🧠 Brainrot bonus! +30 XP";
+}
+
+function stickerXP(){
+  addXP(15);
+  document.getElementById("arcadeText").textContent =
+    "✨ Sticker power activated! +15 XP";
+}
+
 
 /* =========================
    REACTION GAME
@@ -664,4 +804,4 @@ if(oneTimeUsed){
 }
 
 </script></body>
-</html>
+        </html>
